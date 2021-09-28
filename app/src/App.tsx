@@ -1,16 +1,31 @@
-import React, { useRef, useState } from 'react';
-import { Mesh } from 'three';
+import React, {useEffect, useRef, useState} from 'react';
+import {Mesh, MeshBasicMaterial, MeshStandardMaterial, TextureLoader, CanvasTexture} from 'three';
 import { Canvas, useFrame } from '@react-three/fiber';
+import GrassImage from './material/grass.jpg';
 import './App.css';
 
 const Box: React.FC = () => {
   const ref = useRef<Mesh>();
-  const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
+
+  const loader = new TextureLoader();
+  const grassMaterial = new MeshStandardMaterial({
+    map: loader.load(GrassImage),
+    roughness: 0.5,
+    metalness: 0.7,
+  })
+
+  const solidOrangeMaterial = new MeshStandardMaterial({
+    color: 'orange',
+    roughness: 0.5,
+    metalness: 0.7,
+  })
 
   useFrame(() => {
     if (ref?.current !== undefined) {
-      ref.current.rotation.x += 0.01;
+      ref.current.rotation.x += 0.003;
+      ref.current.rotation.y += 0.003;
+      ref.current.rotation.z += 0.002;
     }
   });
 
@@ -21,13 +36,11 @@ const Box: React.FC = () => {
   return (
     <mesh
       ref={ref}
-      scale={active ? 1.5 : 1}
+      scale={1}
       onClick={handleClick}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}
+      material={active ? grassMaterial : solidOrangeMaterial}
     >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
+      <icosahedronGeometry args={[2, 1]} />
     </mesh>
   );
 };
